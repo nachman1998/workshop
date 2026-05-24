@@ -33,7 +33,6 @@ import matplotlib.pyplot as plt
 
 MTU=1500
 BMU=1500
-All=True
 TPS = 60 # TimePerSession in secs
 DELTA_T = 60 # Delta T between splitted sessions
 MIN_TPS = 50
@@ -52,8 +51,8 @@ def matches_filter(row, src_ip, src_port, dst_ip, dst_port, proto):
     return all(fval is None or fval == rval for fval, rval in checks)
 
 
-def plot_sessions(csv_path, src_ip, src_port, dst_ip, dst_port, proto, show_spectogram=False, save_dir=None):
-
+def plot_sessions(csv_path, src_ip, src_port, dst_ip, dst_port, proto,All, show_spectogram=False, save_dir=None):
+    print(All)
     matches = []
 
     with open(csv_path, 'r') as f:
@@ -184,6 +183,7 @@ if __name__ == '__main__':
         description='Plot 2D histogram for sessions matching a 5-tuple filter.'
     )
     parser.add_argument('--input',      required=True,       help='Path to CSV file')
+    parser.add_argument('--All', action='store_true', default=False)
     parser.add_argument('--src-ip',     default=None,        help='Filter by source IP')
     parser.add_argument('--src-port',   default=None,        help='Filter by source port')
     parser.add_argument('--dst-ip',     default=None,        help='Filter by destination IP')
@@ -198,7 +198,7 @@ if __name__ == '__main__':
         print(f"Error: file not found: {args.input}")
         sys.exit(1)
 
-    if not (any([args.src_ip, args.src_port, args.dst_ip, args.dst_port, args.proto])) and All==False:
+    if not (any([args.src_ip, args.src_port, args.dst_ip, args.dst_port, args.proto])) and args.All==False:
         print("Error: provide at least one filter (--src-ip, --src-port, --dst-ip, --dst-port, --proto)")
         sys.exit(1)
 
@@ -209,6 +209,7 @@ if __name__ == '__main__':
         dst_ip          = args.dst_ip,
         dst_port        = args.dst_port,
         proto           = args.proto,
+        All = args.All,
         show_spectogram = args.spectogram,
         save_dir        = args.save,
     )
