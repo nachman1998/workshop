@@ -174,4 +174,4 @@ if __name__ == "__main__":
 
     #test_stat_solo(data1,lambda x:np.sum(x))
     #test_stat_solo(data2, lambda x: np.sum(x))
-    test_stat_pair(data1,data2,False,func1)
+    test_stat_pair(data1,data2,args.i_eq_j,func1)
