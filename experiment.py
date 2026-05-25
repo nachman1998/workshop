@@ -167,6 +167,7 @@ if __name__ == "__main__":
     )
     parser.add_argument("--file1",   help="Path to .npy file #1")
     parser.add_argument("--file2",   help="Path to .npy file #2")
+    parser.add_argument('--i_eq_j', action='store_true', default=False)
     args = parser.parse_args()
     data1 = np.load(args.file1)
     data2 = np.load(args.file2)
