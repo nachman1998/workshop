@@ -35,7 +35,7 @@ def matches_filter(row,filter_csv_pd):
     return False
 
 
-def plot_sessions(csv_path,filter_csv_pd,All,bins,out_name):
+def plot_sessions(csv_path,filter_csv_pd,All,bins,out_file):
     matches = []
 
     with open(csv_path, 'r') as f:
@@ -95,10 +95,11 @@ def plot_sessions(csv_path,filter_csv_pd,All,bins,out_name):
 
     dataset = []
     counter = 0
+
     ts = concat_filterd[0]-concat_filterd[0,0]
     sizes = concat_filterd[1]
 
-    for t in range(int(ts[-1] / DELTA_T - TPS / DELTA_T) + 1):
+    for t in range(int(ts[-1] / DELTA_T - TPS / DELTA_T)):#changed from original need at least 60 sec
         mask = ((ts >= t * DELTA_T) & (ts <= (t * DELTA_T + TPS)))
         # print t * DELTA_T, t * DELTA_T + TPS, ts[-1]
         ts_mask = ts[mask]
@@ -127,7 +128,7 @@ def plot_sessions(csv_path,filter_csv_pd,All,bins,out_name):
             )
 
             H = (H > 0).astype(np.uint16)
-            if False:
+            if True:
                 fig, ax = plt.subplots(figsize=(7, 7))
 
                 im = ax.pcolormesh(
@@ -147,8 +148,8 @@ def plot_sessions(csv_path,filter_csv_pd,All,bins,out_name):
                 print(counter)
     dataset = np.array(dataset)
 
-    np.save(  out_name, dataset)
-    print(out_name+" is done")
+    np.save( out_file, dataset)
+    print(out_file+" is done")
 
 
 
@@ -159,13 +160,13 @@ def plot_sessions(csv_path,filter_csv_pd,All,bins,out_name):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description='Plot 2D histogram for sessions matching a 5-tuple filter.'
+        description='2D histogram for sessions matching a 5-tuple filter.'
     )
     parser.add_argument('--input',      required=True,       help='Path to CSV file')
     parser.add_argument('--All', action='store_true', default=False)
-    parser.add_argument("--bin", required=False,type=int,default=10)
+    parser.add_argument("--bin", required=False,type=int,default=5)
     parser.add_argument('--filter_csv', required=False, help='Path to filer CSV file data =src_ip, src_port, dst_ip, dst_port, proto')
-    parser.add_argument('--out_name', required=True, help='output npy file name')
+    parser.add_argument('--out_file', required=True, help='output npy file name')
 
 
     args = parser.parse_args()
@@ -180,9 +181,9 @@ if __name__ == '__main__':
     filter_df = pd.read_csv(args.filter_csv, header=None)
     filter_df=filter_df.where(pd.notna(filter_df), None)
     plot_sessions(
-        csv_path        = args.input,
+        csv_path= args.input,
         filter_csv_pd=filter_df,
         All = args.All,
         bins=args.bin,
-        out_name = args.out_name
+        out_file = args.out_file
     )
