@@ -43,7 +43,26 @@ def func4(arr1, arr2):
             best_shift = shift
 
     return min_norm
+def func4(arr1, arr2):
+    """
+    Find the column shift of arr2 that minimizes the Frobenius norm difference with arr1.
 
+    Returns: (best_shift, min_norm)
+    """
+    arr1=arr1.astype(np.int64)
+    arr2=arr2.astype(np.int64)
+    n_cols = arr1.shape[1]
+    best_shift = 0
+    min_norm = np.inf
+
+    for shift in range(n_cols):
+        shifted = np.roll(arr2, shift, axis=1)
+        norm = np.linalg.norm(arr1 - shifted, 'fro')**2
+        if norm < min_norm:
+            min_norm = norm
+            best_shift = shift
+
+    return min_norm
 def func4_with_plot(arr1, arr2):
     """
     Find the column shift of arr2 that minimizes the Frobenius norm difference with arr1.
@@ -99,6 +118,67 @@ def func4_with_plot(arr1, arr2):
     plt.show()
 
     return min_norm
+
+def func5(pic1, pic2):
+
+    def compute_row_fft(pic):
+        fft_shifted = np.fft.fftshift(np.fft.fft(pic, axis=1), axes=1)
+        amplitudes = np.abs(fft_shifted)
+        cols = pic.shape[1]
+        omega_col = 2 * np.pi * np.fft.fftshift(np.fft.fftfreq(cols))
+        extent = [omega_col[0], omega_col[-1], pic.shape[0], 0]
+        return amplitudes, extent
+
+    amp1, ext1 = compute_row_fft(pic1)
+    amp2, ext2 = compute_row_fft(pic2)
+
+    fig, axes = plt.subplots(2, 3, figsize=(14, 8))
+
+    for i, (pic, amp, ext, label) in enumerate([
+        (pic1, amp1, ext1, 'pic1'),
+        (pic2, amp2, ext2, 'pic2')
+    ]):
+        im0 = axes[i, 0].imshow(pic, cmap='viridis')
+        axes[i, 0].set_title(f'Original ({label})')
+        axes[i, 0].set_xlabel('Column')
+        axes[i, 0].set_ylabel('Row')
+        plt.colorbar(im0, ax=axes[i, 0])
+
+        im1 = axes[i, 1].imshow(amp, cmap='hot', extent=ext, aspect='auto')
+        axes[i, 1].set_title(f'Row FFT Amplitude ({label})')
+        axes[i, 1].set_xlabel('ω_col (rad/sample)')
+        axes[i, 1].set_ylabel('Row')
+        plt.colorbar(im1, ax=axes[i, 1])
+
+        im2 = axes[i, 2].imshow(np.log1p(amp), cmap='hot', extent=ext, aspect='auto')
+        axes[i, 2].set_title(f'Row FFT Amplitude log scale ({label})')
+        axes[i, 2].set_xlabel('ω_col (rad/sample)')
+        axes[i, 2].set_ylabel('Row')
+        plt.colorbar(im2, ax=axes[i, 2])
+
+    plt.tight_layout()
+    plt.show()
+
+def func6(arr1, arr2):
+    """
+    Find the column shift of arr2 that minimizes the Frobenius norm difference with arr1.
+
+    Returns: (best_shift, min_norm)
+    """
+    arr1=arr1.astype(np.int64)
+    arr2=arr2.astype(np.int64)
+    n_cols = arr1.shape[1]
+    best_shift = 0
+    max_norm = -np.inf
+
+    for shift in range(n_cols):
+        shifted = np.roll(arr2, shift, axis=1)
+        cross_cor = np.sum(arr1 * shifted)
+        if cross_cor > max_norm:
+            max_norm = cross_cor
+            best_shift = shift
+
+    return max_norm
 
 
 def test_stat_pair(pic_arr1, pic_arr2,i_eq_j=True,func=func1):
@@ -174,4 +254,4 @@ if __name__ == "__main__":
 
     #test_stat_solo(data1,lambda x:np.sum(x))
     #test_stat_solo(data2, lambda x: np.sum(x))
-    test_stat_pair(data1,data2,args.i_eq_j,func1)
+    test_stat_pair(data1,data2,args.i_eq_j,func6)
