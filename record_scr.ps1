@@ -32,7 +32,7 @@ for ($i = 1; $i -le $Count; $i++) {
     # start tshark in background
     $process = Start-Process `
         -FilePath $TsharkPath `
-        -ArgumentList "-i `"$Interface`" -w `"$OutputFile`"" `
+        -ArgumentList "-i `"$Interface`" -F pcap -w `"$OutputFile`"" `
         -PassThru `
         -WindowStyle Hidden
 

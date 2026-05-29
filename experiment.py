@@ -252,6 +252,6 @@ if __name__ == "__main__":
     data1 = np.load(args.file1)
     data2 = np.load(args.file2)
 
-    #test_stat_solo(data1,lambda x:np.sum(x))
+    test_stat_solo(data1,lambda x:np.sum(x))
     #test_stat_solo(data2, lambda x: np.sum(x))
-    test_stat_pair(data1,data2,args.i_eq_j,func6)
+    test_stat_pair(data1,data2,args.i_eq_j,func1)

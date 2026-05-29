@@ -99,7 +99,7 @@ def plot_sessions(csv_path,filter_csv_pd,All,bins,out_file):
     ts = concat_filterd[0]-concat_filterd[0,0]
     sizes = concat_filterd[1]
 
-    for t in range(int(ts[-1] / DELTA_T - TPS / DELTA_T)):#changed from original need at least 60 sec
+    for t in range(int(ts[-1] / DELTA_T - TPS / DELTA_T)+1):#changed from original need at least 60 sec
         mask = ((ts >= t * DELTA_T) & (ts <= (t * DELTA_T + TPS)))
         # print t * DELTA_T, t * DELTA_T + TPS, ts[-1]
         ts_mask = ts[mask]
